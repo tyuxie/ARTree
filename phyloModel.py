@@ -3,7 +3,6 @@ import numpy as np
 import pdb
 
 def decompJC(symm=False):
-    # pA = pG = pC = pT = .25
     pden = np.array([.25, .25, .25, .25])
     rate_matrix_JC = 1.0/3 * np.ones((4,4))
     for i in range(4):

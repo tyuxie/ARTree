@@ -108,7 +108,7 @@ def test(args):
 
 
     model = VBPI(taxa, data, pden=np.ones(4)/4., subModel=('JC', 1.0), emp_tree_freq=empdataloader, hidden_dim_tree=args.hdimTree, hidden_dim_branch=args.hdimBranch, 
-                 num_layers_tree=args.hLTree, num_layers_branch=args.hLBranch, gnn_type=args.gnn_type, aggr=args.aggr, edge_aggr=args.edge_aggr, project=args.proj, norm_type=args.norm_type)
+                 num_layers_tree=args.hLTree, num_layers_branch=args.hLBranch, gnn_type=args.gnn_type, branch_gnn_type=args.branch_gnn_type, aggr=args.aggr, edge_aggr=args.edge_aggr, project=args.proj, norm_type=args.norm_type)
     with torch.no_grad():
         model.load_state_dict(torch.load(os.path.join(args.folder, 'final.pt')))
     model.tree_model.eval()
@@ -129,13 +129,11 @@ def test(args):
             lb1s.append(lb1)
             lb10s.append(lb10)
             lb1000s.append(lb1000)
-            if (i+1) % 10 == 0:
-                logger.info('{} {} rounds calculated'.format(time.asctime(time.localtime(time.time())), i+1))
 
         lb10s = np.array(lb10s).reshape(10,100)
         lb10s = np.mean(lb10s, axis=0)
         lb1s = np.array(lb1s).reshape(10,100)
-        lb1smean10000 = np.mean(lb1s, axis=0)
+        lb1s = np.mean(lb1s, axis=0)
 
         np.save(os.path.join(args.folder, 'lb1s.npy'), lb1s)
         np.save(os.path.join(args.folder, 'lb10s.npy'), lb10s)
@@ -154,15 +152,11 @@ def test(args):
         sbn_model = SBN(taxa, rootsplit_supp_dict, subsplit_supp_dict)
 
         lb1s, lb10s, lb1000s = [], [], []
-        n_outliers = 0
         for i in range(1000):
             lb1, lb10, lb1000, n_out = model.mp_lower_bound_sbnsupport(sbn_model, n_runs=1000)
-            n_outliers += n_out
             lb1s.append(lb1)
             lb10s.append(lb10)
             lb1000s.append(lb1000)
-            if (i+1) % 10 == 0:
-                logger.info('{} {} rounds calculated | Num of Outliers {}'.format(time.asctime(time.localtime(time.time())), i+1, n_outliers))
 
         lb10s = np.array(lb10s).reshape(10,100)
         lb10s = np.mean(lb10s, axis=0) 
@@ -176,21 +170,22 @@ def test(args):
         logger.info('SBN support LB10: mean: {:.4f} std: {:.4f}'.format(np.mean(lb10s), np.std(lb10s)))
         logger.info('SBN support LB1000: mean: {:.4f} std: {:.4f}'.format(np.mean(lb1000s), np.std(lb1000s)))
 
-    return kldiv, lb1s, lb1smean10000, lb10s, lb1000s
+    return kldiv, lb1s, lb10s, lb1000s
 
 def parse_args():
     parser = argparse.ArgumentParser()
 
     ######### Data arguments
     parser.add_argument('--dataset', default='DS1', help=' DS1 | DS2 | DS3 | DS4 | DS5 | DS6 | DS7 | DS8 ')
-    parser.add_argument('--empFreq', default=False, action='store_true', help='emprical frequence for KL computation')
+    parser.add_argument('--empFreq', default=False, action='store_true', help='empirical frequence for KL computation')
     ######### Model arguments
     parser.add_argument('--nf', type=int, default=2, help=' branch length feature embedding dimension ')
     parser.add_argument('--hdimTree', type=int, default=100, help='hidden dimension for node embedding net')
     parser.add_argument('--hdimBranch', type=int, default=100, help='hidden dimension for node embedding net')
     parser.add_argument('--hLTree', type=int, default=2, help='number of hidden layers for node embedding net of tree model')
     parser.add_argument('--hLBranch',  type=int, default=2, help='number of hidden layers for node embedding net of branch model')
-    parser.add_argument('--gnn_type', type=str, default='edge', help='gcn | sage | gin | ggnn')
+    parser.add_argument('--gnn_type', type=str, default='edge', help='gnn_type for tree topology model')
+    parser.add_argument('--branch_gnn_type', type=str, default='edge', help='gnn type for branch length model')
     parser.add_argument('--norm_type', type=str, default='layer', help='normalization type for tree model. ')
     parser.add_argument('--aggr', type=str, default='sum', help='sum | mean | max')
     parser.add_argument('--edge_aggr', type=str, default='max', help='sum | mean | max for EdgePooling')

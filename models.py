@@ -138,7 +138,7 @@ class TDE(nn.Module):
 class VBPI(nn.Module):
     EPS = np.finfo(float).eps
     def __init__(self, taxa, data, pden, subModel, emp_tree_freq=None,
-                 scale=0.1, hidden_dim_tree=100, hidden_dim_branch=100, num_layers_tree=2, num_layers_branch=2, gnn_type='edge', aggr='sum', edge_aggr='max', project=False, norm_type=''):
+                 scale=0.1, hidden_dim_tree=100, hidden_dim_branch=100, num_layers_tree=2, num_layers_branch=2, gnn_type='edge', branch_gnn_type='edge', aggr='sum', edge_aggr='max', project=False, norm_type=''):
         super().__init__()
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.taxa, self.emp_tree_freq = taxa, emp_tree_freq
@@ -148,7 +148,7 @@ class VBPI(nn.Module):
         self.log_p_tau = - np.sum(np.log(np.arange(3, 2*self.ntips-3, 2)))
 
         self.tree_model = GNN_GRUFourierModel(self.ntips, hidden_dim_tree, num_layers=num_layers_tree, gnn_type=gnn_type, aggr=aggr, edge_aggr=edge_aggr, project=project, norm_type=norm_type, device=self.device).to(self.device)
-        self.branch_model = GNN_BranchModel(self.ntips, hidden_dim_branch, num_layers=num_layers_branch, gnn_type=gnn_type, aggr=aggr, project=project, device=self.device).to(device=self.device)
+        self.branch_model = GNN_BranchModel(self.ntips, hidden_dim_branch, num_layers=num_layers_branch, gnn_type=branch_gnn_type, aggr=aggr, project=project, device=self.device).to(device=self.device)
         torch.set_num_threads(1)
 
 

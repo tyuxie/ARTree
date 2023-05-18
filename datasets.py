@@ -41,9 +41,7 @@ def node_embedding(tree, ntips):
         node_idx_list.append(node.name)
     
     branch_idx_map = torch.sort(torch.tensor(node_idx_list).long(), dim=0, descending=False)[1]
-    # parent_idxes = torch.LongTensor(parent_idx_list)
-    edge_index = torch.tensor(edge_index).long()  ##The first row of edge_index is parent_index
-    # pdb.set_trace()
+    edge_index = torch.tensor(edge_index).long() 
     
 
     return torch.index_select(torch.stack(node_features), 0, branch_idx_map), edge_index[branch_idx_map]
@@ -74,7 +72,6 @@ def node_embedding_forward(tree, ntips, level):
         neigh_idx_list = []
         if not node.is_root():
             node.d = node.c * node.up.d + node.d
-            # parent_idx_list.append(node.up.name)
             neigh_idx_list.append(node.up.name)
             
             if not node.is_leaf():
@@ -89,9 +86,7 @@ def node_embedding_forward(tree, ntips, level):
         node_idx_list.append(node.name)
     
     branch_idx_map = torch.sort(torch.tensor(node_idx_list).long(), dim=0, descending=False)[1]
-    # parent_idxes = torch.LongTensor(parent_idx_list)
-    edge_index = torch.tensor(edge_index).long()  ##The first row of edge_index is parent_index
-    # pdb.set_trace()
+    edge_index = torch.tensor(edge_index).long() 
     
     return torch.index_select(torch.stack(node_features), 0, branch_idx_map), edge_index[branch_idx_map], torch.from_numpy(rel_pos), name_dict
 
@@ -148,7 +143,6 @@ def process_empFreq(dataset):
     i = 0
     for tree in emp_tree_freq.keys():
         stat = []
-        # if not 'primates_xie' in dataset:
         namenum(tree, taxa)
         subtree = tree.copy()
         for taxon in range(ntips-1,2,-1):
@@ -195,7 +189,6 @@ class EmbedData(Dataset):
         tar.close()
         with open(os.path.join(self.folder_path, 'tree_{}.pkl'.format(index)), 'rb') as f:
             stat = pickle.load(f)
-        # stat = torch.load(os.path.join(self.path, 'tree_{}.pt'.format(index)))
         os.remove(os.path.join(self.folder_path, 'tree_{}.pkl'.format(index)))
         return stat
     

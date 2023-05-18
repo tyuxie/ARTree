@@ -88,8 +88,6 @@ class GINConv(nn.Module):
         
         self.mlp = nn.Sequential(nn.Linear(self.in_channels, self.out_channels, bias=bias),
                                 norm_funcs[norm_type](self.out_channels)
-                                 # nn.ELU(),
-                                 # nn.Linear(self.out_channels, self.out_channels, bias=bias),
                                  )
         self.device = device
 
@@ -115,44 +113,8 @@ class EdgeConv(nn.Module):
         x_ = x.repeat(1, edge_index.shape[-1]).view(-1, self.in_channels) 
         node_and_neigh_feature = torch.cat((x_, neigh_feature.view(-1, self.in_channels)-x_), dim=-1) 
         output = self.mlp(node_and_neigh_feature)
-        # output[edge_index.flatten()==-1] = -math.inf
         output = torch.where(edge_index.flatten().view(-1, 1)!=-1, output, torch.tensor(-math.inf,device=self.device))        
         return torch.max(output.view(-1, edge_index.shape[-1], self.out_channels), dim=1)[0] 
-
-        
-
-class GatedGraphConv(nn.Module):
-    def __init__(self, out_channels, num_layers=1, bias=True, device=torch.device('cpu'), **kwargs):
-        super().__init__()
-        self.out_channels = out_channels
-        self.num_layers = num_layers
-        self.weight = nn.Parameter(torch.randn(num_layers, self.out_channels, self.out_channels))
-        
-        self.rnn = nn.GRUCell(out_channels, out_channels, bias=bias)
-        self.device = device
-
-    def reset_parameters(self):
-        uniform(self.out_channels, self.weight)
-        self.rnn.reset_parameters()
-        
-    def forward(self, x, edge_index, *args):
-        if x.size(-1) > self.out_channels:
-            raise ValueError('The number of input channels is not allowed to '
-                             'be larger than the number of output channels')
-        
-        if x.size(-1) < self.out_channels:
-            x = torch.cat((x, x.new_zeros(x.size(0), self.out_channels - x.size(-1))), dim=1)
-        
-        for i in range(self.num_layers):
-            m = torch.matmul(x, self.weight[i])
-            
-            node_feature_padded = torch.cat((m, torch.zeros(size=(1, self.out_channels), device=self.device)))
-            neigh_feature = node_feature_padded[edge_index]
-            m = neigh_feature.sum(1)
-            
-            x = self.rnn(m, x)
-        
-        return x
         
         
         

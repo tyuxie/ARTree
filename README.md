@@ -1,10 +1,10 @@
-The code base for 'ARTree: A Deep Auto-regressive Model for Phylogenetic Inference'
+# ARTree: A Deep Autoregressive Model for Phylogenetic Inference
 
 Before your training, please first construct the embeded training set of tree topologies by running:
 ```
 python get_embed_data.py --dataset $DATASET --repo $REPO
 ```
-and construct the embed ground truth of tree topologies by running
+and construct the embed ground truth of tree topologies by running:
 ```
 python get_embed_data.py --dataset $DATASET --empFreq
 ```

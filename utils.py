@@ -54,7 +54,6 @@ def namenum(tree, taxon, nodetosplitMap=None):
         taxon2idx[name] = i
     for node in tree.traverse("postorder"):
         if node.is_leaf():
-            # assert type(node.name) is str, "The taxon name should be strings"
             if not isinstance(node.name, str):
                 warnings.warn("The taxon names are not strings, please check if they are already integers!")
             else:
@@ -175,7 +174,6 @@ def mp_node_embedding(args):
         neigh_idx_list = []
         if not node.is_root():
             node.d = node.c * node.up.d + node.d
-            # parent_idx_list.append(node.up.name)
             neigh_idx_list.append(node.up.name)
             
             if not node.is_leaf(): 

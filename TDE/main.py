@@ -65,7 +65,7 @@ def parse_args():
     parser.add_argument('--repo', type=int, default=1, help='simulation | DS1 | DS2 | ...')
     parser.add_argument('--hdim', type=int, default=100, help='hidden dimension for node embedding net')
     parser.add_argument('--hL', type=int, default=2, help='number of hidden layers for node embedding net')
-    parser.add_argument('--gnn_type', type=str, default='edge', help='gcn | sage | gin | ggnn')
+    parser.add_argument('--gnn_type', type=str, default='edge', help='gnn type for tree topology model')
     parser.add_argument('--project', default=False, action='store_true')
     parser.add_argument('--aggr', type=str, default='sum', help='sum | mean | max')
     parser.add_argument('--edge_aggr', type=str, default='max', help='sum | mean | max for EdgePooling')

@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import math
 import numpy as np 
-from gnnModels_slim import GNNStack, GatedGraphConv, IDConv, GraphPooling, EdgePooling, MeanStdPooling, TimeEmbedding
+from gnnModels_slim import GNNStack, IDConv, EdgePooling, MeanStdPooling, TimeEmbedding
 
 class GNN_GRUFourierModel(nn.Module):
     def __init__(self, ntips, hidden_dim=100, num_layers=1, gnn_type='edge', aggr='sum', edge_aggr='max', project=False, bias=True, norm_type='', device=torch.device('cpu'), **kwargs):
@@ -13,10 +13,8 @@ class GNN_GRUFourierModel(nn.Module):
 
         if gnn_type == 'identity':
             self.gnn = IDConv()
-        elif gnn_type != 'ggnn':
-            self.gnn = GNNStack(self.ntips, hidden_dim, num_layers=num_layers, bias=bias, gnn_type=gnn_type, aggr=aggr, project=project, norm_type=norm_type, device=device)
         else:
-            self.gnn = GatedGraphConv(hidden_dim, num_layers=num_layers, bias=bias, device=device)
+            self.gnn = GNNStack(self.ntips, hidden_dim, num_layers=num_layers, bias=bias, gnn_type=gnn_type, aggr=aggr, project=project, norm_type=norm_type, device=device)
 
         self.gru = nn.GRUCell(hidden_dim, hidden_dim)
 
@@ -52,7 +50,6 @@ class GNN_GRUFourierModel(nn.Module):
             neigh_idx_list = []
             if not node.is_root():
                 node.d = node.c * node.up.d + node.d
-                # parent_idx_list.append(node.up.name)
                 neigh_idx_list.append(node.up.name)
                 
                 if not node.is_leaf():
@@ -67,9 +64,7 @@ class GNN_GRUFourierModel(nn.Module):
             node_idx_list.append(node.name)
         
         branch_idx_map = torch.sort(torch.tensor(node_idx_list,device=self.device).long(), dim=0, descending=False)[1]
-        # parent_idxes = torch.LongTensor(parent_idx_list)
         edge_index = torch.tensor(edge_index,device=self.device).long() 
-        # pdb.set_trace()
         
         return torch.index_select(torch.stack(node_features), 0, branch_idx_map), edge_index[branch_idx_map], torch.from_numpy(rel_pos).to(self.device), name_dict
 
@@ -120,10 +115,8 @@ class GNN_BranchModel(nn.Module):
         
         if gnn_type == 'identity':
             self.gnn = IDConv()
-        elif gnn_type != 'ggnn':
-            self.gnn = GNNStack(self.ntips, hidden_dim, num_layers=num_layers, bias=bias, gnn_type=gnn_type, aggr=aggr, project=project, device=device)
         else:
-            self.gnn = GatedGraphConv(hidden_dim, num_layers=num_layers, bias=bias, device=device)
+            self.gnn = GNNStack(self.ntips, hidden_dim, num_layers=num_layers, bias=bias, gnn_type=gnn_type, aggr=aggr, project=project, device=device)
             
         if gnn_type == 'identity':
             self.mean_std_net = MeanStdPooling(self.ntips, hidden_dim, bias=bias, device=device)
@@ -164,9 +157,7 @@ class GNN_BranchModel(nn.Module):
             node_idx_list.append(node.name)
         
         branch_idx_map = torch.sort(torch.tensor(node_idx_list, device=self.device).long(), dim=0, descending=False)[1]
-        # parent_idxes = torch.LongTensor(parent_idx_list)
         edge_index = torch.tensor(edge_index, device=self.device).long()
-        # pdb.set_trace()
         
         return torch.index_select(torch.stack(node_features), 0, branch_idx_map), edge_index[branch_idx_map]
     
