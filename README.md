@@ -1,4 +1,8 @@
-# ARTree: A Deep Autoregressive Model for Phylogenetic Inference
+# ARTree
+
+Code for [ARTree: A Deep Autoregressive Model for Phylogenetic Inference](http) (NeurIPS 2023, spotlight)
+
+ARTree: A Deep Autoregressive Model for Phylogenetic Inference
 
 Before your training, please first construct the embeded training set of tree topologies by running:
 ```
