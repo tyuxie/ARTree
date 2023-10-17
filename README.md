@@ -2,6 +2,18 @@
 
 Code for [ARTree: A Deep Autoregressive Model for Phylogenetic Inference](https://arxiv.org/abs/2310.09553) (NeurIPS 2023, spotlight)
 
+Please cite our paper if you find this code usefuld
+```
+@inproceedings{
+anonymous2023artree,
+title={{ART}ree: A Deep Autoregressive Model for Phylogenetic Inference},
+author={Xie, Tianyu and Zhang, Cheng},
+booktitle={Thirty-seventh Conference on Neural Information Processing Systems},
+year={2023},
+url={https://openreview.net/forum?id=SoLebIqHgZ}
+}
+```
+
 ## Demo
 
 Before your training, please first construct the embeded training set of tree topologies by running:
