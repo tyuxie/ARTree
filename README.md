@@ -1,6 +1,6 @@
 # ARTree
 
-Code for [ARTree: A Deep Autoregressive Model for Phylogenetic Inference](http) (NeurIPS 2023, spotlight)
+Code for [ARTree: A Deep Autoregressive Model for Phylogenetic Inference](https://arxiv.org/abs/2310.09553) (NeurIPS 2023, spotlight)
 
 ## Demo
 
