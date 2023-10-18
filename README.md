@@ -2,7 +2,7 @@
 
 Code for [ARTree: A Deep Autoregressive Model for Phylogenetic Inference](https://arxiv.org/abs/2310.09553) (NeurIPS 2023, spotlight)
 
-Please cite our paper if you find this code usefuld
+Please cite our paper if you find this code useful:
 ```
 @inproceedings{
 anonymous2023artree,
