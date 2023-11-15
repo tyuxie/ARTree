@@ -5,7 +5,7 @@ Code for [ARTree: A Deep Autoregressive Model for Phylogenetic Inference](https:
 Please cite our paper if you find this code useful:
 ```
 @inproceedings{
-anonymous2023artree,
+xie2023artree,
 title={{ART}ree: A Deep Autoregressive Model for Phylogenetic Inference},
 author={Xie, Tianyu and Zhang, Cheng},
 booktitle={Thirty-seventh Conference on Neural Information Processing Systems},
